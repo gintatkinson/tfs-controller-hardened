@@ -15,7 +15,7 @@
 import grpc, json, logging, threading
 from enum import Enum
 from prettytable import PrettyTable
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple, Union, Any
 from prometheus_client import Counter, Histogram
 from prometheus_client.metrics import MetricWrapperBase, INF
 from common.tools.grpc.Tools import grpc_message_to_json_string
@@ -115,6 +115,9 @@ class MetricsPool:
             counter_blocked    = counter_blocked.labels(**labels)
 
         return histogram_duration, counter_started, counter_completed, counter_failed, counter_blocked
+    # Legacy compatibility
+    def get_metrics_context(self, *args, **kwargs): return None
+
 
     def get_pretty_table(self, remove_empty_buckets : bool = True) -> PrettyTable:
         with MetricsPool.lock:
@@ -209,8 +212,14 @@ def metered_subclass_method(metrics_pool : MetricsPool):
         return inner_wrapper
     return outer_wrapper
 
-def safe_and_metered_rpc_method(metrics_pool : MetricsPool, logger : logging.Logger):
+def safe_and_metered_rpc_method(metrics_pool : MetricsPool, logger : Union[logging.Logger, Any]):
     def outer_wrapper(func):
+        
+        # Legacy compatibility shim for memory_pool argument
+        _logger = logger
+        if hasattr(_logger, "get_memory_context"):
+            import logging as _logging
+            _logger = _logging.getLogger(func.__module__)
         method_name = func.__name__
         metrics = metrics_pool.get_metrics(method_name)
         histogram_duration, counter_started, counter_completed, counter_failed = metrics
@@ -219,21 +228,21 @@ def safe_and_metered_rpc_method(metrics_pool : MetricsPool, logger : logging.Log
         def inner_wrapper(self, request, grpc_context : grpc.ServicerContext):
             counter_started.inc()
             try:
-                logger.debug('{:s} request: {:s}'.format(method_name, grpc_message_to_json_string(request)))
+                _logger.debug('{:s} request: {:s}'.format(method_name, grpc_message_to_json_string(request)))
                 reply = func(self, request, grpc_context)
-                logger.debug('{:s} reply: {:s}'.format(method_name, grpc_message_to_json_string(reply)))
+                _logger.debug('{:s} reply: {:s}'.format(method_name, grpc_message_to_json_string(reply)))
                 counter_completed.inc()
                 return reply
             except ServiceException as e:   # pragma: no cover (ServiceException not thrown)
                 if e.code not in [grpc.StatusCode.NOT_FOUND, grpc.StatusCode.ALREADY_EXISTS]:
                     # Assume not found or already exists is just a condition, not an error
-                    logger.exception('{:s} exception'.format(method_name))
+                    _logger.exception('{:s} exception'.format(method_name))
                     counter_failed.inc()
                 else:
                     counter_completed.inc()
                 grpc_context.abort(e.code, e.details)
             except Exception as e:          # pragma: no cover, pylint: disable=broad-except
-                logger.exception('{:s} exception'.format(method_name))
+                _logger.exception('{:s} exception'.format(method_name))
                 counter_failed.inc()
                 grpc_context.abort(grpc.StatusCode.INTERNAL, str(e))
         return inner_wrapper
@@ -241,6 +250,12 @@ def safe_and_metered_rpc_method(metrics_pool : MetricsPool, logger : logging.Log
 
 def safe_and_metered_rpc_method_async(metrics_pool: MetricsPool, logger: logging.Logger):
     def outer_wrapper(func):
+        
+        # Legacy compatibility shim for memory_pool argument
+        _logger = logger
+        if hasattr(_logger, "get_memory_context"):
+            import logging as _logging
+            _logger = _logging.getLogger(func.__module__)
         method_name = func.__name__
         metrics = metrics_pool.get_metrics(method_name)
         histogram_duration, counter_started, counter_completed, counter_failed = metrics
@@ -248,21 +263,21 @@ def safe_and_metered_rpc_method_async(metrics_pool: MetricsPool, logger: logging
         async def inner_wrapper(self, request, grpc_context: grpc.aio.ServicerContext):
             counter_started.inc()
             try:
-                logger.debug('{:s} request: {:s}'.format(method_name, grpc_message_to_json_string(request)))
+                _logger.debug('{:s} request: {:s}'.format(method_name, grpc_message_to_json_string(request)))
                 reply = await func(self, request, grpc_context)
-                logger.debug('{:s} reply: {:s}'.format(method_name, grpc_message_to_json_string(reply)))
+                _logger.debug('{:s} reply: {:s}'.format(method_name, grpc_message_to_json_string(reply)))
                 counter_completed.inc()
                 return reply
             except ServiceException as e:  # pragma: no cover (ServiceException not thrown)
                 if e.code not in [grpc.StatusCode.NOT_FOUND, grpc.StatusCode.ALREADY_EXISTS]:
                     # Assume not found or already exists is just a condition, not an error
-                    logger.exception('{:s} exception'.format(method_name))
+                    _logger.exception('{:s} exception'.format(method_name))
                     counter_failed.inc()
                 else:
                     counter_completed.inc()
                 await grpc_context.abort(e.code, e.details)
             except Exception as e:  # pragma: no cover, pylint: disable=broad-except
-                logger.exception('{:s} exception'.format(method_name))
+                _logger.exception('{:s} exception'.format(method_name))
                 counter_failed.inc()
                 await grpc_context.abort(grpc.StatusCode.INTERNAL, str(e))
 
@@ -270,3 +285,8 @@ def safe_and_metered_rpc_method_async(metrics_pool: MetricsPool, logger: logging
 
     return outer_wrapper
 
+
+
+class MemoryPool:
+    def __init__(self, service_name, container_name="", labels={}): pass
+    def get_memory_context(self, *args, **kwargs): return None

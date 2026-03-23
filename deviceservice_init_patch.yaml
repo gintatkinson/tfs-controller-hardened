@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deviceservice
+  namespace: tfs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deviceservice
+  template:
+    metadata:
+      labels:
+        app: deviceservice
+    spec:
+      volumes:
+      - name: patch-volume
+        emptyDir: {}
+      - name: config-volume
+        configMap:
+          name: device-decorator-patch-v2
+      initContainers:
+      - name: patch-init
+        image: busybox
+        command: ["sh", "-c", "cp /config/Decorator.py /patch/Decorator.py"]
+        volumeMounts:
+        - name: patch-volume
+          mountPath: /patch
+        - name: config-volume
+          mountPath: /config
+      containers:
+      - name: server
+        image: xgaitfs/deviceservice:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 2020
+          name: grpc
+        - containerPort: 9192
+          name: metrics
+        env:
+        - name: LOG_LEVEL
+          value: DEBUG
+        - name: NATS_SERVICE_HOST
+          value: nats.nats.svc.cluster.local
+        - name: CRDB_SERVICE_HOST
+          value: cockroachdb-public.crdb.svc.cluster.local
+        volumeMounts:
+        - name: patch-volume
+          mountPath: /var/teraflow/common/method_wrappers/Decorator.py
+          subPath: Decorator.py
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 10m
+            memory: 128Mi
