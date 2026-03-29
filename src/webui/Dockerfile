@@ -25,10 +25,12 @@ FROM python:3.9-slim
 ENV PYTHONUNBUFFERED=0
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION='python'
 
-# Download the gRPC health probe -- not needed here... health will be asserted using HTTP
-# RUN GRPC_HEALTH_PROBE_VERSION=v0.2.0 && \
-#     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
-#     chmod +x /bin/grpc_health_probe
+# Download the gRPC health probe -- health will be asserted using HTTP, but keeping it for consistency
+RUN apt-get update && apt-get install -y wget && \
+    GRPC_HEALTH_PROBE_VERSION=v0.4.25 && \
+    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-arm64 && \
+    chmod +x /bin/grpc_health_probe && \
+    apt-get purge -y wget && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Creating a user for security reasons
 RUN groupadd -r webui && useradd --no-log-init -r -m -g webui webui

@@ -41,6 +41,18 @@ spec:
           value: "1000"
         - name: QDB_CAIRO_MAX_UNCOMMITTED_ROWS
           value: "100000"
+        volumeMounts:
+        - name: questdb-data
+          mountPath: /var/lib/questdb
+  volumeClaimTemplates:
+  - metadata:
+      name: questdb-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: microk8s-hostpath
+      resources:
+        requests:
+          storage: 5Gi
 ---
 apiVersion: v1
 kind: Service

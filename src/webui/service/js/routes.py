@@ -18,8 +18,8 @@ js = Blueprint('js', __name__, url_prefix='/js')
 
 @js.get('site.js')
 def site_js():
-    return render_template('js/site.js')
+    return render_template('js/site.js'), 200, {'Content-Type': 'application/javascript'}
 
 @js.get('topology.js')
 def topology_js():
-    return render_template('js/topology.js')
+    return render_template('js/topology.js'), 200, {'Content-Type': 'application/javascript'}

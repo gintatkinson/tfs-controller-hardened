@@ -13,8 +13,8 @@
 # limitations under the License.
 
 CC       = gcc
-CFLAGS   = -I. -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include/
-LDLIBS   = -lm
+CFLAGS   = -I. $(shell pkg-config --cflags glib-2.0)
+LDLIBS   = -lm $(shell pkg-config --libs glib-2.0) -luuid
 LDFLAGS  = 
 
 all: pathComp
@@ -32,15 +32,15 @@ coverage: pathComp-cvr
 
 pathComp: pathComp.o pathComp_log.o pathComp_cjson.o pathComp_tools.o pathComp_ksp.o pathComp_sp.o pathComp_ear.o pathComp_RESTapi.o 
 	gcc -o pathComp pathComp.o pathComp_log.o pathComp_cjson.o pathComp_tools.o pathComp_ksp.o pathComp_sp.o pathComp_ear.o pathComp_RESTapi.o \
-		-L/usr/lib/x86_64-linux-gnu/ -lglib-2.0 -luuid $(LDFLAGS) $(LDLIBS)
+		$(LDFLAGS) $(LDLIBS)
 
 pathComp-dbg: pathComp.o pathComp_log.o pathComp_cjson.o pathComp_tools.o pathComp_ksp.o pathComp_sp.o pathComp_ear.o pathComp_RESTapi.o 
 	gcc -o pathComp-dbg pathComp.o pathComp_log.o pathComp_cjson.o pathComp_tools.o pathComp_ksp.o pathComp_sp.o pathComp_ear.o pathComp_RESTapi.o \
-		-L/usr/lib/x86_64-linux-gnu/ -lglib-2.0 -luuid $(LDFLAGS) $(LDLIBS)
+		$(LDFLAGS) $(LDLIBS)
 
 pathComp-cvr: pathComp.o pathComp_log.o pathComp_cjson.o pathComp_tools.o pathComp_ksp.o pathComp_sp.o pathComp_ear.o pathComp_RESTapi.o 
 	gcc -o pathComp-cvr pathComp.o pathComp_log.o pathComp_cjson.o pathComp_tools.o pathComp_ksp.o pathComp_sp.o pathComp_ear.o pathComp_RESTapi.o \
-		-L/usr/lib/x86_64-linux-gnu/ -lglib-2.0 -luuid $(LDFLAGS) $(LDLIBS)
+		$(LDFLAGS) $(LDLIBS)
 
 pathComp_log.o: pathComp_log.h pathComp_log.c
 	$(CC) $(CFLAGS) -c pathComp_log.c -o pathComp_log.o  

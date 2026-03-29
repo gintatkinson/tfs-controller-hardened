@@ -238,3 +238,4 @@ export GRAF_EXT_PORT_HTTP="3000"
 
 # Define a Load Balancer IP for Telemetry Collector components
 export LOAD_BALANCER_IP="192.168.5.250" # <-- Change this to match your network
+./deploy/all.sh

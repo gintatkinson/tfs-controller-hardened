@@ -44,7 +44,7 @@ spec:
           - 0
       containers:
         - name: server
-          image: labs.etsi.org:5050/tfs/controller/webui:latest
+          image: localhost:32000/tfs/webui:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 8004

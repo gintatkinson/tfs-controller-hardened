@@ -59,12 +59,11 @@ def home():
     context_topology_form.context_topology.choices.append(('', 'Select...'))
 
     contexts : ContextList = context_client.ListContexts(Empty())
+    contexts : ContextList = context_client.ListContexts(Empty())
     for context_ in contexts.contexts:
-        #context_uuid : str = context_.context_id.context_uuid.uuid
-        context_name : str = context_.name
+        context_name : str = context_.name or context_.context_id.context_uuid.uuid
         topologies : TopologyList = context_client.ListTopologies(context_.context_id)
         for topology_ in topologies.topologies:
-            #topology_uuid : str = topology_.topology_id.topology_uuid.uuid
             topology_name : str = topology_.name
             raw_values = context_name, topology_name
             b64_values = [base64.b64encode(v.encode('utf-8')).decode('utf-8') for v in raw_values]

@@ -29,7 +29,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: labs.etsi.org:5050/tfs/controller/nbi:latest
+          image: localhost:32000/tfs/nbi:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

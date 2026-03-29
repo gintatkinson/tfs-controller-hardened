@@ -106,7 +106,10 @@ SERVICE_HANDLERS = [
     (TapiServiceHandler, [
         {
             FilterFieldEnum.SERVICE_TYPE  : ServiceTypeEnum.SERVICETYPE_TAPI_CONNECTIVITY_SERVICE,
-            FilterFieldEnum.DEVICE_DRIVER : [DeviceDriverEnum.DEVICEDRIVER_TRANSPORT_API],
+            FilterFieldEnum.DEVICE_DRIVER : [
+                DeviceDriverEnum.DEVICEDRIVER_UNDEFINED,
+                DeviceDriverEnum.DEVICEDRIVER_TRANSPORT_API
+            ],
         }
     ]),
     (TapiXrServiceHandler, [
