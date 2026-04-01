@@ -50,13 +50,6 @@ spec:
                 name: webuiservice
                 port:
                   number: 8004
-          - path: /grafana(/|$)(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: webuiservice
-                port:
-                  number: 3000
           - path: /()(.well-known/.*)
             pathType: Prefix
             backend:
