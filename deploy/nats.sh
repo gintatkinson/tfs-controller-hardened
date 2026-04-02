@@ -69,7 +69,13 @@ function nats_deploy_single() {
         echo ">>> NATS is present; skipping step."
     else
         echo ">>> Deploy NATS"
-        helm3 install ${NATS_NAMESPACE} nats/nats --namespace ${NATS_NAMESPACE} --set nats.image=nats:2.9-alpine
+        helm3 install ${NATS_NAMESPACE} nats/nats --namespace ${NATS_NAMESPACE} \
+            --set nats.image=nats:2.9-alpine \
+            --set nats.jetstream.enabled=true \
+            --set nats.jetstream.memStorage.enabled=false \
+            --set nats.persistence.enabled=true \
+            --set nats.persistence.size=5Gi \
+            --set nats.persistence.storageClass=microk8s-hostpath
 
         echo ">>> Waiting NATS statefulset to be created..."
         while ! kubectl get --namespace ${NATS_NAMESPACE} statefulset/${NATS_NAMESPACE} &> /dev/null; do

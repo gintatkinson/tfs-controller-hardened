@@ -13,7 +13,7 @@
 # limitations under the License.
 
 CC       = gcc
-CFLAGS   = -I. $(shell pkg-config --cflags glib-2.0)
+CFLAGS   = -I. $(shell pkg-config --cflags glib-2.0) -I/usr/lib/aarch64-linux-gnu/glib-2.0/include
 LDLIBS   = -lm $(shell pkg-config --libs glib-2.0) -luuid
 LDFLAGS  = 
 

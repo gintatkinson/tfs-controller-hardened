@@ -116,7 +116,11 @@ class MetricsPool:
 
         return histogram_duration, counter_started, counter_completed, counter_failed, counter_blocked
     # Legacy compatibility
-    def get_metrics_context(self, *args, **kwargs): return None
+    # Legacy compatibility shim for MemoryPool/Context requirements
+    def get_metrics_context(self, *args, **kwargs): return self
+    def get_memory_context(self, *args, **kwargs): return self
+    def __enter__(self): return self
+    def __exit__(self, exc_type, exc_val, exc_tb): pass
 
 
     def get_pretty_table(self, remove_empty_buckets : bool = True) -> PrettyTable:
@@ -289,4 +293,7 @@ def safe_and_metered_rpc_method_async(metrics_pool: MetricsPool, logger: logging
 
 class MemoryPool:
     def __init__(self, service_name, container_name="", labels={}): pass
-    def get_memory_context(self, *args, **kwargs): return None
+    def get_memory_context(self, *args, **kwargs): return self
+    def get_metrics_context(self, *args, **kwargs): return self
+    def __enter__(self): return self
+    def __exit__(self, exc_type, exc_val, exc_tb): pass

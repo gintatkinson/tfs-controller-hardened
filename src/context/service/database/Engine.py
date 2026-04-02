@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging, sqlalchemy, sqlalchemy_utils
+import logging, os, sqlalchemy, sqlalchemy_utils
 from common.Settings import get_setting
 
 LOGGER = logging.getLogger(__name__)
 
 APP_NAME = 'tfs'
 ECHO = False # true: dump SQL commands and transactions executed
-CRDB_URI_TEMPLATE = 'cockroachdb://{:s}:{:s}@cockroachdb-public.{:s}.svc.cluster.local:{:s}/{:s}?sslmode={:s}'
+CRDB_URI_TEMPLATE = 'cockroachdb://{:s}:{:s}@{:s}:{:s}/{:s}?sslmode={:s}'
 
 class Engine:
     @staticmethod
@@ -32,8 +32,9 @@ class Engine:
             CRDB_USERNAME  = get_setting('CRDB_USERNAME')
             CRDB_PASSWORD  = get_setting('CRDB_PASSWORD')
             CRDB_SSLMODE   = get_setting('CRDB_SSLMODE')
+            crdb_host = os.environ.get('CRDB_SERVICE_HOST', 'cockroachdb-public.{:s}.svc.cluster.local'.format(CRDB_NAMESPACE))
             crdb_uri = CRDB_URI_TEMPLATE.format(
-                CRDB_USERNAME, CRDB_PASSWORD, CRDB_NAMESPACE, CRDB_SQL_PORT, CRDB_DATABASE, CRDB_SSLMODE)
+                CRDB_USERNAME, CRDB_PASSWORD, crdb_host, CRDB_SQL_PORT, CRDB_DATABASE, CRDB_SSLMODE)
 
         try:
             engine = sqlalchemy.create_engine(

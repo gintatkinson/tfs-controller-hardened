@@ -157,3 +157,29 @@ spec:
   #behavior:
   #  scaleDown:
   #    stabilizationWindowSeconds: 30
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tfs-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /webui(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: webuiservice
+            port:
+              number: 8004
+      - path: /grafana(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: webuiservice
+            port:
+              number: 3000
+

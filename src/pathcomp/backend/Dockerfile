@@ -19,7 +19,7 @@ FROM ubuntu:20.04 AS builder
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Install build software
-RUN apt-get update -y && apt-get install build-essential curl gcovr libglib2.0-dev pkg-config -y
+RUN apt-get update -y && apt-get install build-essential curl gcovr libglib2.0-dev pkg-config uuid-dev -y
 RUN apt-get install valgrind -y
 
 # mkdir
