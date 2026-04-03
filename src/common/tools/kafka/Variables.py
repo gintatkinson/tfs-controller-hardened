@@ -19,7 +19,7 @@ from kafka.errors import TopicAlreadyExistsError
 from common.Settings import get_setting
 
 LOGGER = logging.getLogger(__name__)
-KFK_SERVER_ADDRESS_TEMPLATE = 'kafka-service.{:s}.svc.cluster.local:{:s}'
+KFK_SERVER_ADDRESS_TEMPLATE = 'kafka-public.{:s}.svc.cluster.local:{:s}'
 
 KAFKA_TOPIC_NUM_PARTITIONS         = 1
 KAFKA_TOPIC_REPLICATION_FACTOR     = 1

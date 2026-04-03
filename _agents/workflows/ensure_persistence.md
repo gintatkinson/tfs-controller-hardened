@@ -2,28 +2,40 @@
 description: How to ensure 100% recovery and persistence for the TFS environment
 ---
 
-To ensure the platform is fully functional after a hard restart, follow this checklist:
+# TeraFlowSDN ARM64 Persistence Protocol
 
-### 1. Infrastructure Persistence
-- [ ] **Verify Database Storage**: Check if `cockroachdb` has a Bound PersistentVolumeClaim (PVC).
-  ```bash
-  kubectl get pvc -n crdb
-  ```
-  If missing, re-apply the manifest with a `volumeClaimTemplates` or manual PVC.
-- [ ] **Verify Network Stability**: Ensure the static IP `10.0.2.10` is in `/etc/netplan/` and not just applied via `ip addr`.
-- [ ] **Verify Registry Presence**: Ensure the local container registry is persistent and contains the ARM64 images.
+This workflow ensures that the hardened TeraFlowSDN environment (ARM64) can be recovered to its "Source of Truth" baseline in the event of a system crash or disk corruption.
 
-### 2. Application Architecture
-- [ ] **ARM64 Compatibility**: For every microservice in `CrashLoopBackOff`, verify the image architecture matches the VM (ARM64).
-- [ ] **Build Check**: If an image is X86_64, use the local build workflow to recreate it for ARM64.
+## 1. Using the Native Snapshot (Fastest)
 
-### 3. Data Consistency
-- [ ] **Re-inject State**: After a restart, verify the `admin` context exists.
-  ```python
-  python3 verify_data.py
-  ```
-- [ ] **Auto-population**: If missing, automatically run the `load_descriptors.py` script.
+The VM `tfs-vm-fresh` has a baseline snapshot: `hardened-v1`.
 
-### 4. Verification
-- [ ] **WebUI Health**: Check if `webuiservice` can reach `contextservice`.
-- [ ] **Functional Test**: Access `http://10.0.2.10/webui/` and verify the device list is populated.
+### To Restore from Snapshot:
+If the VM becomes unstable, run:
+```bash
+multipass stop tfs-vm-fresh
+multipass restore tfs-vm-fresh.hardened-v1
+multipass start tfs-vm-fresh
+```
+This restores the entire VM, including the MicroK8s cluster, all hardened images, and the 9 core services, to their March 30th stable state.
+
+## 2. Using the Recovery Script (Code-Level Restoration)
+
+If the snapshot is unavailable but the repository is intact, use the `recovery.sh` script on the host:
+```bash
+chmod +x recovery.sh
+./recovery.sh
+```
+This script sequentially re-deploys the 9 core services with the necessary ARM64 resource delays (180s probe delay) and fixed Ingress routing.
+
+## 3. Mandatory Snapshot Maintenance
+
+Whenever a new stable feature is merged into the "Source of Truth":
+1. Verify all 9 core services are `1/1 Running`.
+2. Stop the VM: `multipass stop tfs-vm-fresh`.
+3. Take a new snapshot: `multipass snapshot tfs-vm-fresh --name v[NUMBER]`.
+4. Restart: `multipass start tfs-vm-fresh`.
+
+---
+> [!IMPORTANT]
+> The `hardened-v1` snapshot is your primary "Undo" button. Never modify core architecture (Dockerfiles/Manifests) without verifying the restoration path first.

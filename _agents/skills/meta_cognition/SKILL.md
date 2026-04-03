@@ -25,3 +25,19 @@ Because agent contexts are ephemeral and truncate over long sessions, any undocu
 
 ## Enforcement
 Failure to abide by these rules guarantees that you will trap the USER in a cyclical failure loop. If you find yourself repeatedly typing the same debugging commands, stop immediately and ask yourself: "Where did I fail to document this the first time?"
+
+## Mandatory TeraFlowSDN Hardening Checklist (Pre-Flight)
+
+Before any system reconstruction or deployment (Local, ARM64, or Cloud), verify the following "Source of Truth" compliance points:
+
+### 1. Architecture Compatibility (Exec Format Error)
+- **Check**: All `Dockerfiles` (especially `slice`, `load_generator`, `monitoring`) must target the correct `grpc_health_probe` binary.
+- **Verification**: Ensure `GRPC_HEALTH_PROBE_VERSION=v0.4.18` (or newer) and the architecture matches the target (e.g., `-linux-arm64` for Apple Silicon/ARM VMs).
+
+### 2. Service Discovery (Kafka Connectivity)
+- **Check**: `deploy/tfs.sh` and `src/common/tools/kafka/Variables.py` must point to the actual service name.
+- **Verification**: In the current environment, the service is `kafka-public`. Ensure no components are hardcoded to the default `kafka-service` string.
+
+### 3. Lifecycle Stability (Ready/Liveness)
+- **Check**: `readinessProbe` and `livenessProbe` in component manifests (e.g., `nbiservice.yaml`, `sliceservice.yaml`).
+- **Verification**: Enforce `initialDelaySeconds: 180` and `failureThreshold: 30` (or greater) to account for ARM64/GCP startup latency and gunicorn/env-var wait cycles.

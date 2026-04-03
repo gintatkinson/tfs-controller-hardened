@@ -27,11 +27,11 @@ class Engine:
         crdb_uri = get_setting('CRDB_URI', default=None)
         if crdb_uri is None:
             CRDB_NAMESPACE = get_setting('CRDB_NAMESPACE')
-            CRDB_SQL_PORT  = get_setting('CRDB_SQL_PORT')
-            CRDB_DATABASE  = get_setting('CRDB_DATABASE')
-            CRDB_USERNAME  = get_setting('CRDB_USERNAME')
-            CRDB_PASSWORD  = get_setting('CRDB_PASSWORD')
-            CRDB_SSLMODE   = get_setting('CRDB_SSLMODE')
+            CRDB_SQL_PORT  = get_setting('CRDB_SQL_PORT',  default='26257'   )
+            CRDB_DATABASE  = get_setting('CRDB_DATABASE',  default='tfs'     )
+            CRDB_USERNAME  = get_setting('CRDB_USERNAME',  default='root'    )
+            CRDB_PASSWORD  = get_setting('CRDB_PASSWORD',  default='root'    )
+            CRDB_SSLMODE   = get_setting('CRDB_SSLMODE',   default='disable' )
             crdb_host = os.environ.get('CRDB_SERVICE_HOST', 'cockroachdb-public.{:s}.svc.cluster.local'.format(CRDB_NAMESPACE))
             crdb_uri = CRDB_URI_TEMPLATE.format(
                 CRDB_USERNAME, CRDB_PASSWORD, crdb_host, CRDB_SQL_PORT, CRDB_DATABASE, CRDB_SSLMODE)

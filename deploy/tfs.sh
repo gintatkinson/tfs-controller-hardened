@@ -133,7 +133,7 @@ kubectl create secret generic crdb-data --namespace ${TFS_K8S_NAMESPACE} --type=
 printf "\n"
 
 echo ">>> Create Secret with Apache Kafka..."
-KFK_SERVER_PORT=$(kubectl --namespace ${KFK_NAMESPACE} get service kafka-service -o 'jsonpath={.spec.ports[0].port}')
+KFK_SERVER_PORT=$(kubectl --namespace ${KFK_NAMESPACE} get service kafka-public -o 'jsonpath={.spec.ports[0].port}')
 kubectl create secret generic kfk-kpi-data --namespace ${TFS_K8S_NAMESPACE} --type='Opaque' \
     --from-literal=KFK_NAMESPACE=${KFK_NAMESPACE} \
     --from-literal=KFK_SERVER_PORT=${KFK_SERVER_PORT}
