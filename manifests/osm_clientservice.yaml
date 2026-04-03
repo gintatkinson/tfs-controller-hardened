@@ -29,7 +29,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: labs.etsi.org:5050/tfs/controller/osm_client:latest
+          image: localhost:32000/tfs/osm_client:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 30210

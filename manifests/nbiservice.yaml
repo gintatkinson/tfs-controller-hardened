@@ -51,16 +51,16 @@ spec:
             httpGet:
               path: /healthz
               port: 8080
-            initialDelaySeconds: 180   # NBI's gunicorn takes 30~40 seconds to bootstrap
-            periodSeconds: 15
-            failureThreshold: 30
+            initialDelaySeconds: 50   # NBI's gunicorn takes 30~40 seconds to bootstrap
+            periodSeconds: 10
+            failureThreshold: 10
           livenessProbe:
             httpGet:
               path: /healthz
               port: 8080
-            initialDelaySeconds: 180   # NBI's gunicorn takes 30~40 seconds to bootstrap
-            periodSeconds: 15
-            failureThreshold: 30
+            initialDelaySeconds: 50   # NBI's gunicorn takes 30~40 seconds to bootstrap
+            periodSeconds: 10
+            failureThreshold: 10
           resources:
             requests:
               cpu: 150m

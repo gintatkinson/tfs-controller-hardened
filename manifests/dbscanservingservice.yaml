@@ -28,7 +28,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: labs.etsi.org:5050/tfs/controller/dbscanserving:latest
+          image: localhost:32000/tfs/dbscanserving:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 10008

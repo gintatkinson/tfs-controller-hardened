@@ -17,7 +17,7 @@ kind: Ingress
 metadata:
   name: tfs-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
 
     # Enable websocket services and configure sticky cookies (seems not to work)
     #nginx.org/websocket-services: "nbiservice"
@@ -43,13 +43,20 @@ spec:
   rules:
     - http:
         paths:
-          - path: /webui
+          - path: /webui(/|$)(.*)
             pathType: Prefix
             backend:
               service:
                 name: webuiservice
                 port:
                   number: 8004
+          - path: /grafana(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: webuiservice
+                port:
+                  number: 3000
           - path: /()(.well-known/.*)
             pathType: Prefix
             backend:
@@ -71,7 +78,7 @@ spec:
                 name: nbiservice
                 port:
                   number: 8080
-          - path: /tfs-api(/|$)(.*)
+          - path: /()(tfs-api/.*)
             pathType: Prefix
             backend:
               service:

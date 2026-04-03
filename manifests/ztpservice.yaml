@@ -67,7 +67,7 @@ spec:
               value: contextservice
             - name: DEVICE_SERVICE_HOST
               value: deviceservice
-          image: labs.etsi.org:5050/tfs/controller/ztp:0.2.0
+          image: localhost:32000/tfs/ztp:0.2.0
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3

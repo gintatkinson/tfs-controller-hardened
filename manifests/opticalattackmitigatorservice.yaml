@@ -28,7 +28,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: labs.etsi.org:5050/tfs/controller/opticalattackmitigator:latest
+          image: localhost:32000/tfs/opticalattackmitigator:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 10007

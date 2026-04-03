@@ -28,7 +28,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: labs.etsi.org:5050/tfs/controller/l3_distributedattackdetector:latest
+          image: localhost:32000/tfs/l3_distributedattackdetector:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 10000

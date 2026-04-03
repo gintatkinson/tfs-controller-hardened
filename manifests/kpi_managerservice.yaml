@@ -31,7 +31,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: labs.etsi.org:5050/tfs/controller/kpi_manager:latest
+          image: localhost:32000/tfs/kpi_manager:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 30010

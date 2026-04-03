@@ -31,7 +31,7 @@ spec:
       shareProcessNamespace: true
       containers:
         - name: server
-          image: labs.etsi.org:5050/tfs/controller/te:latest
+          image: localhost:32000/tfs/te:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 10030

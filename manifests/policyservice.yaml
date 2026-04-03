@@ -71,7 +71,7 @@ spec:
               value: contextservice
             - name: MONITORING_SERVICE_HOST
               value: monitoringservice
-          image: labs.etsi.org:5050/tfs/controller/policy:0.1.0
+          image: localhost:32000/tfs/policy:0.1.0
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3

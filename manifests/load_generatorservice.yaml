@@ -29,7 +29,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: server
-          image: labs.etsi.org:5050/tfs/controller/load_generator:latest
+          image: localhost:32000/tfs/load_generator:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 50052
@@ -40,15 +40,9 @@ spec:
           readinessProbe:
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:50052"]
-            initialDelaySeconds: 180
-            periodSeconds: 15
-            timeoutSeconds: 10
           livenessProbe:
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:50052"]
-            initialDelaySeconds: 180
-            periodSeconds: 15
-            timeoutSeconds: 10
           resources:
             requests:
               cpu: 256m
