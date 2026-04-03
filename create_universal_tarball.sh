@@ -4,7 +4,7 @@
 
 set -e
 
-SOURCE_DIR="/Users/perkunas/.gemini/antigravity/scratch/tfs-work/controller-develop"
+SOURCE_DIR=$(pwd)
 OUTPUT_FILE="../tfs_source_baseline.tar.gz"
 
 echo ">>> [UNIVERSAL] Creating portable tarball from $SOURCE_DIR..."
