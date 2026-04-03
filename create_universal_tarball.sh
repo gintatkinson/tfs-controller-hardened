@@ -5,12 +5,11 @@
 set -e
 
 SOURCE_DIR="/Users/perkunas/.gemini/antigravity/scratch/tfs-work/controller-develop"
-OUTPUT_FILE="tfs_source_baseline.tar.gz"
+OUTPUT_FILE="../tfs_source_baseline.tar.gz"
 
 echo ">>> [UNIVERSAL] Creating portable tarball from $SOURCE_DIR..."
-# We use -p to preserve permissions and --exclude .git if you're already in a repo
-# (but for the mirror, we want everything except untracked junk)
-tar --exclude='.git' -czpf "$OUTPUT_FILE" -C "$SOURCE_DIR" .
+# Save to parent directory to avoid recursive compression
+tar --exclude='.git' --exclude='*.tar.gz' -czpf "$OUTPUT_FILE" -C "$SOURCE_DIR" .
 
 echo ">>> [UNIVERSAL] Created $OUTPUT_FILE ($(ls -lh $OUTPUT_FILE | awk '{print $5}'))"
 echo ">>> [UNIVERSAL] To achieve Zero-Anchor recovery across ALL OSs:"
