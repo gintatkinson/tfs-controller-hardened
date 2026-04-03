@@ -53,7 +53,18 @@ multipass transfer /tmp/tfs_sync.tar.gz tfs-vm-fresh:/home/ubuntu/
 multipass exec tfs-vm-fresh -- tar -xzf /home/ubuntu/tfs_sync.tar.gz -C /home/ubuntu/tfs-main/
 rm /tmp/tfs_sync.tar.gz
 
-# 4. Trigger Internal Recovery (Host-Side Orchestrator)
+# 5. Automated Image Reconstruction (If local registry is empty)
+echo ">>> [BOOTSTRAP] Checking for local ARM64 images..."
+IMAGE_COUNT=$(multipass exec tfs-vm-fresh -- docker images --format "{{.Repository}}:{{.Tag}}" | grep "localhost:32000" | wc -l || echo "0")
+
+if [ "$IMAGE_COUNT" -lt 10 ]; then
+    echo ">>> [BOOTSTRAP] Local registry is empty. Triggering full ARM64 rebuild from source..."
+    multipass exec tfs-vm-fresh -- /home/ubuntu/tfs-main/deploy/all.sh || (echo ">>> [ERROR] Rebuild Failed." && exit 1)
+else
+    echo ">>> [BOOTSTRAP] Found $IMAGE_COUNT local images. Skipping rebuild."
+fi
+
+# 6. Trigger Internal Recovery (Host-Side Orchestrator)
 echo ">>> [BOOTSTRAP] Running recovery orchestrator..."
 chmod +x recovery.sh
 ./recovery.sh || (echo ">>> [ERROR] Recovery Failed. Check logs." && exit 1)
