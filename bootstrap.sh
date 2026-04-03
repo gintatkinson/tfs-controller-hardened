@@ -57,19 +57,13 @@ else
     echo ">>> [BOOTSTRAP] VM 'tfs-vm-fresh' is already running."
 fi
 
-# 5. High-Integrity Sync to VM & Tool Provisioning
-echo ">>> [BOOTSTRAP] Syncing assets and provisioning build environment..."
+# 5. High-Integrity Sync to VM
+echo ">>> [BOOTSTRAP] Syncing assets to VM..."
 tar --exclude .git --exclude "*.tar.gz" -czf /tmp/tfs_sync.tar.gz .
 multipass transfer /tmp/tfs_sync.tar.gz tfs-vm-fresh:/home/ubuntu/
 multipass exec tfs-vm-fresh -- mkdir -p /home/ubuntu/tfs-main/
 multipass exec tfs-vm-fresh -- tar -xzf /home/ubuntu/tfs_sync.tar.gz -C /home/ubuntu/tfs-main/
 rm /tmp/tfs_sync.tar.gz
-
-# Ensure all build dependencies are present for the target architecture (Intel/ARM64)
-echo ">>> [BOOTSTRAP] Provisioning build tools inside the VM..."
-multipass exec tfs-vm-fresh -- sudo apt-get update -qq
-multipass exec tfs-vm-fresh -- sudo apt-get install -y -qq build-essential docker.io golang-go openjdk-11-jdk python3-pip cmake libpcre2-dev
-multipass exec tfs-vm-fresh -- sudo usermod -aG docker ubuntu
 
 # 6. Automated Rebuild for Local Architecture
 echo ">>> [BOOTSTRAP] Auditing ARM64/Intel local images..."
