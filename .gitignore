@@ -193,3 +193,5 @@ libyang/
 
 # Other logs
 **/logs/*.log.*
+*.tar.gz
+*.dmg
