@@ -23,6 +23,12 @@ Because agent contexts are ephemeral and truncate over long sessions, any undocu
 4. **Verify Memory Status Check**:
    - Whenever you are asked to "rebuild from scratch" or "recover", your immediate first action must be to read the prevailing `SKILL.md` documents and the `implementation_plan.md` to load constraints into your active context window. Do not guess what happened previously.
 
+5. **Mandatory Sovereign Reconciliation Audit**:
+   - Whenever you are initialized in a session or recovery request, you MUST perform a **Sovereign Reconciliation Audit** before any other exploration or modification commands:
+     1. **Compare Metadata vs. Reality**: Use `ls` and `git status` to verify if the User's "Active Document" actually exists on disk.
+     2. **Report Discrepancies**: If a file is "open" but deleted/missing in the working directory, you are **LOCKED** (Forbidden from action) until you have reported the discrepancy and the User has approved a restoration path.
+     3. **Never Guess**: Priority must always be given to the logical state (Metadata/Repo) over sensory heuristics (Empty `ls` output).
+
 ## Enforcement
 Failure to abide by these rules guarantees that you will trap the USER in a cyclical failure loop. If you find yourself repeatedly typing the same debugging commands, stop immediately and ask yourself: "Where did I fail to document this the first time?"
 
